@@ -110,7 +110,7 @@ requestDataShopping = function(url) {
                 })
                 
                 resolve(shopping)
-            }).catch(() => console.log(err))
+            }).catch((err) => console.log(err))
     })
 }
 
