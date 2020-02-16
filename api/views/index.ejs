@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <p>Welcome to <%= title %></p>
+
+    <% data.images.forEach(function(image){ %>
+      <img src="<%= image %>">
+    <% }); %>
+  </body>
+</html>
