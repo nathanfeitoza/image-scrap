@@ -10,5 +10,23 @@
     <% data.images.forEach(function(image){ %>
       <img src="<%= image %>">
     <% }); %>
+    <br><br>
+
+    <% data.shopping.forEach(function(shopping) { %>
+      <div class="items">
+        <div class="item-image">
+          <img src="<%= shopping.thumb %>" width="80" height="80">  
+        </div>  
+        <div class="item-body">
+          <div class="item-name">
+            <span><%= shopping.name %></span>
+          </div>
+          <div class="item-price">
+            <span><%= shopping.price %></span>
+          </div>
+        </div>
+
+      </div>
+    <% }); %>
   </body>
 </html>

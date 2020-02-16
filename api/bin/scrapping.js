@@ -1,8 +1,5 @@
 const request = require('request-promise');
 const cheerio = require('cheerio');
-const atob = require('atob');
-const fs = require('fs')
-
 
 function requestPromisse(url) {
     const options = {
@@ -26,12 +23,70 @@ function requestPromisse(url) {
     })
 }
 
+clearBase64Image = function(base64) {
+    let image = decodeURI(base64).replace(/\s/g,'');
+    image = image.replace(/\\x3d/gi,'');
+
+    return image;
+}
+
 requestDataShopping = function(url) {
     return new Promise((resolve, reject) => {
-        console.log(url)
         requestPromisse(url)
             .then(($) => {
                 const shopping = [];
+                const scripts = $('script');
+                let googleLdi = '';
+                let thumbs = {};
+
+                scripts.each(function() {
+                    const val = $(this).html();
+
+                    if (val.indexOf('google.ldi') != -1) {
+                        googleLdi = val;
+                    }
+                })
+
+                let matchScript = googleLdi.match(/google.ldi=(.*)/gi);
+
+                if (matchScript[0] != undefined || matchScript[0] != null) {
+                    matchScript = matchScript[0]
+                    
+                    const thumbsScript = matchScript.replace(/\n|\r|\r\n/, '')
+                        .replace(/;google.pim={}+(.*)/gi, '')
+                        .replace(/google.ldi=/gi, '');
+
+                    try {
+                        Object.assign(thumbs, JSON.parse(thumbsScript))
+                    } catch(err) {
+                        console.log(err)
+                    }
+                }
+
+                const getThumbProduct = (thumbId) => {
+                    const scriptsNonce = $('script[nonce]')
+                    let thumbImage = thumbs[thumbId];
+
+                    if (thumbImage != undefined) {
+                        return thumbImage;
+                    }
+
+                    scriptsNonce.each(function() {
+                        let analyseThumb = $(this).html();
+
+                        if (analyseThumb.indexOf(thumbId) != -1) {
+                            analyseThumb = analyseThumb.match(/var s='(.*)';/);
+                        
+                            if (analyseThumb[1]) {
+                                thumbImage = clearBase64Image(analyseThumb[1]);
+                                return thumbImage;
+                            }
+                        }
+                    })
+
+                    return thumbImage;
+                }
+
                 $('.sh-dlr__list-result').each(function() {
                     const nodeNameAndLink = $(this).find('.mASaeb');
                     const nodePrice = $(this).find('.h1Wfwb.O8U6h');
@@ -39,16 +94,18 @@ requestDataShopping = function(url) {
                     const nameProduct = nodeNameAndLink.find('.xsRiS').html();
                     const linkProduct = 'http://images.google.com' 
                         + nodeNameAndLink.find('a').attr('href');
-                    const thumbProduct = nodeThumb.find('img').attr('src');
+                    const thumbId = nodeThumb.find('img').attr('id');
+                    const thumbProduct = getThumbProduct(thumbId);
                     let priceProduct = nodePrice.find('span[aria-hidden="true"]').html();
                     priceProduct = priceProduct.replace('&#xA0;', ' ');
+
                     const dataAdd = {
                         name: nameProduct,
                         thumb: thumbProduct,
                         link: linkProduct,
                         price: priceProduct
                     };
-                    console.log(dataAdd)
+
                     shopping.push(dataAdd)
                 })
                 
@@ -79,8 +136,7 @@ function requestImages(urlImage) {
                     analyse = analyse.match(/var s='(.*)';/);
                     
                     if (analyse[1]) {
-                        const imageAdd = decodeURI(analyse[1]).replace(/\s/g,'')
-
+                        const imageAdd = clearBase64Image(analyse[1]);
                         images.push(imageAdd)
                     }
                 }
