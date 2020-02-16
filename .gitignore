@@ -3,3 +3,5 @@ api/node_modules/
 *.code-workspace
 package-lock.json
 api/package-lock.json
+api/yarn.lock
+api/.env

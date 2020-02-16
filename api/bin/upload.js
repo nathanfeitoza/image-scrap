@@ -2,7 +2,7 @@
 const imgur = require('imgur');
 const path = './imgur';
 
-imgur.setClientId('c66b04dc80a8151');
+imgur.setClientId(process.env.API_KEY_IMGUR);
 
 const uploadImgur = function (base64) {
     let imgurFavicon = base64.replace(/data:image\/(.*);base64,/gi, '')
