@@ -97,7 +97,9 @@ requestDataShopping = function(url) {
                     const thumbId = nodeThumb.find('img').attr('id');
                     const thumbProduct = getThumbProduct(thumbId);
                     let priceProduct = nodePrice.find('span[aria-hidden="true"]').html();
-                    priceProduct = priceProduct.replace('&#xA0;', ' ');
+                    priceProduct = priceProduct == null
+                        ? null
+                        : priceProduct.replace('&#xA0;', ' ');
 
                     const dataAdd = {
                         name: nameProduct,
