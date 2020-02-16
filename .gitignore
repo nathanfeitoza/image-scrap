@@ -1,0 +1,3 @@
+.node_modules/
+*.code_workspace
+package-lock.json
