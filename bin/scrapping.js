@@ -154,7 +154,10 @@ function requestImages(urlImage) {
             let urlShopping = $('#hdtb-msb-vis a')[2].attribs.href;
 
             if (urlShopping != undefined) {
-                urlShopping = 'http://images.google.com' + urlShopping;
+                urlShopping = 'http://images.google.com' 
+                    + urlShopping
+                    + '&location_requested=Brazil&location_used=Brazil&google_domain=google.com.br&hl=pt&gl=br&device=desktop';
+                    
                 requestDataShopping(urlShopping).then((shopping) => {
                     retorno.shopping = shopping;
                     resolve(retorno);
